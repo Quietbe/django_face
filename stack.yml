@@ -1,0 +1,71 @@
+# Use root/example as user/password credentials
+
+version : "3.8"
+
+services:
+    web: 
+        #设置自动重启
+        restart: always
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        image : web 
+        container_name: web
+        hostname: web
+        restart: always
+        command: bash -c "python manage.py runserver 0.0.0.0:8080" #python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && 
+        #volumes: 
+        # - ./:/web
+        #   cache_mode:"none"
+         
+        volumes: 
+          - type: bind 
+            source: ./
+            target: /web
+            
+        ports : 
+         - "8080:8080"
+        networks:
+          - web
+        depends_on:
+            - mysql
+            - redis
+
+    mysql:
+        image: mysql:8.0.32
+            # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+            # (this is just an example, not intended to be a production configuration)
+        container_name: mysql
+        #hostname: mysql
+        networks:
+          - web
+        restart: always
+        command: --default-authentication-plugin=mysql_native_password --mysqlx=0
+        ports:
+          - 3306:3306
+        volumes:
+          - ./db:/var/lib/mysql
+        environment: 
+          - MYSQL_HOST=localhost 
+          - MYSQL_PORT=3306 
+          - MYSQL_DATABASE=test
+          - MYSQL_USER=root
+          - MYSQL_PASSWORD=970209
+          - MYSQL_ROOT_PASSWORD=970209
+
+        
+
+    redis:
+        image: redis:7.0
+        container_name: redis
+        ports:
+          - "6379:6379"
+        networks:
+          - web
+        volumes:
+          - /root/redis/data:/data
+        command: redis-server
+          
+    
+networks:
+  web:

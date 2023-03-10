@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>成绩评分页面</title>
+</head>
+
+<body>
+<h1 style="text-align: center">文件上传</h1>
+<p style="color: red">{{ error }}</p>
+    <table border="1">
+        <tr>
+            <th>文档名称</th>
+            <th>文件</th>
+            <th>分值</th>
+            <th>姓名</th>
+        </tr>
+
+        <tr>
+            <form action="../index/" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <td><input type="text" name="file_name" value=""></td>
+            <td><input type="file" name="file"></td>
+            <td><input type="text" name="fraction" value="99"></td>
+            <td><input type="text" name="people_name" value="张三"></td>
+                <input type="submit" value="提交">
+            </form>
+        </tr>
+    </table>
+
+
+<br><br>
+<table border="1" style="text-align: center">
+
+    <tr style="text-align: center">
+        <th>ID</th>
+        <th>文档名</th>
+        <th>文件</th>
+        <th>分数</th>
+        <th>姓名</th>
+        <th>删除</th>
+    </tr>
+    {% for it in data_list %}
+        <tr>
+        {% for i in it %}
+
+            <td>{{ i }}</td>
+
+        {% endfor %}
+            <td><form action="../delete/" method="post" > {% csrf_token %}
+                <input type="hidden" name="id" value="{{ it.0 }}" >
+                <input type="submit" value="删除">
+            </form></td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+<hr style="border-top: solid 2px #888888; box-shadow: 0 2px 2px -2px #888888;">
+<h1 style="text-align: center">人脸识别</h1>
+<p >{{ err }}</p>
+<table border="1">
+        <tr>
+            <form action="../people_face/" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <td><input type="file" name="file" value="文件" accept="image/*"></td>
+                <input type="submit" value="识别">
+            </form>
+        </tr>
+
+
+</table>
+<hr style="border-top: solid 2px #888888; box-shadow: 0 2px 2px -2px #888888;">
+<img src="{% static '' %}{{ people_face }}" style="max-width: 500px;max-height: 500px;" alt="">
+<img src="{% static face %}" style="max-width: 500px;max-height: 500px;" alt="">
+
+<br><br>
+<hr style="border-top: solid 2px #888888; box-shadow: 0 2px 2px -2px #888888;">
+
+
+
+<h1 style="text-align: center">人脸识别redis</h1>
+<table border="1">
+        <tr>
+            <form action="../people_face_redis/" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <td><input type="file" name="file" value="文件" accept="image/*"></td>
+                <input type="submit" value="识别">
+            </form>
+        </tr>
+</table>
+<div>
+    <hr style="border-top: solid 2px #888888; box-shadow: 0 2px 2px -2px #888888;">
+<img src="data:image/png;base64,{{ up_file_base64 }}" style="max-width: 500px;max-height: 500px;" alt="">
+<img src="data:image/png;base64,{{ face_base64 }}" style="max-width: 500px;max-height: 500px;" alt="">
+
+</div>
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
